@@ -105,14 +105,17 @@ if ! [[ "$BUDGET_USD" =~ ^[0-9]+(\.[0-9]+)?$ ]] || \
   error "Budget amount must be a positive number."
 fi
 
+# Default cost center name = username + date/time
+DEFAULT_CC_NAME="${GH_USER}-$(date +%Y%m%d-%H%M%S)"
+
 # Prompt for cost center name if not provided and running interactively
 if [[ -z "$COST_CENTER_NAME" ]]; then
   if [[ -t 0 ]] && ! $DRY_RUN; then
-    echo -e "${CYAN}Default cost center name:${RESET} ${GH_USER}"
+    echo -e "${CYAN}Default cost center name:${RESET} ${DEFAULT_CC_NAME}"
     read -r -p "Enter a custom name (or press Enter to use default): " CUSTOM_NAME
-    COST_CENTER_NAME="${CUSTOM_NAME:-$GH_USER}"
+    COST_CENTER_NAME="${CUSTOM_NAME:-$DEFAULT_CC_NAME}"
   else
-    COST_CENTER_NAME="$GH_USER"
+    COST_CENTER_NAME="$DEFAULT_CC_NAME"
   fi
 fi
 
