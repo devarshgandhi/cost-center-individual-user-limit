@@ -103,6 +103,8 @@ By default, the cost center is named `<username>-YYYYMMDD-HHMMSS` (e.g. `octocat
 
 ### Give a user a $50 hard-cap budget
 
+The cost center will be auto-named `octocat-YYYYMMDD-HHMMSS`:
+
 ```bash
 ./create-user-cost-center.sh \
   --enterprise my-company \
@@ -110,13 +112,14 @@ By default, the cost center is named `<username>-YYYYMMDD-HHMMSS` (e.g. `octocat
   --budget-usd 50
 ```
 
-### Give a user 1000 PRUs (converted at default $0.04/PRU = $40)
+### Give a user 1000 PRUs with a custom cost center name
 
 ```bash
 ./create-user-cost-center.sh \
   --enterprise my-company \
   --user octocat \
-  --budget-prus 1000
+  --budget-prus 1000 \
+  --cost-center-name "octocat-copilot"
 ```
 
 ### Give a user 500 PRUs at a custom rate, with alerts
@@ -150,7 +153,7 @@ monalisa,500
 hubot,2000
 ```
 
-Then loop:
+Then loop (uses auto-generated timestamped names):
 
 ```bash
 while IFS=',' read -r user prus; do

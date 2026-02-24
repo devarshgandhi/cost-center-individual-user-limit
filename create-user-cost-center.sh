@@ -16,7 +16,7 @@
 #     OR
 #     --budget-prus <count>           # e.g. 1000  (converted using --pru-rate)
 #     [--pru-rate <usd-per-pru>]      # default: 0.04
-#     [--cost-center-name <name>]     # default: <username>
+#     [--cost-center-name <name>]     # default: <username>-YYYYMMDD-HHMMSS
 #     [--alert-recipient <username>]  # GitHub username to receive budget alerts
 #     [--dry-run]                     # Print API calls without executing
 #
@@ -24,15 +24,16 @@
 #   - Enterprise billing: read & write
 #
 # Examples:
-#   # Give user "octocat" a $40 hard-cap PRU budget
+#   # Give user "octocat" a $40 hard-cap PRU budget (cost center: octocat-20260224-143002)
 #   ./create-user-cost-center.sh --enterprise myenterprise --user octocat --budget-usd 40
 #
-#   # Give user "octocat" 1000 PRUs (at $0.04/PRU = $40)
-#   ./create-user-cost-center.sh --enterprise myenterprise --user octocat --budget-prus 1000
+#   # Give user "octocat" 1000 PRUs with a custom cost center name
+#   ./create-user-cost-center.sh --enterprise myenterprise --user octocat --budget-prus 1000 \
+#     --cost-center-name "octocat-copilot"
 #
-#   # Custom PRU rate (e.g. if using premium models at $0.08/PRU)
+#   # Custom PRU rate and alerts
 #   ./create-user-cost-center.sh --enterprise myenterprise --user octocat \
-#     --budget-prus 500 --pru-rate 0.08
+#     --budget-prus 500 --pru-rate 0.08 --alert-recipient billing-admin
 # ---------------------------------------------------------------------------
 
 set -euo pipefail
