@@ -8,7 +8,7 @@ Automate creating a GitHub Enterprise cost center for a specific user, adding th
 
 When a user needs additional GitHub Copilot Premium Request Units (PRUs), this script:
 
-1. **Creates a cost center** named after the user (or a custom name you provide)
+1. **Creates a cost center** with a timestamped name like `octocat-20260224-143002` (or a custom name you provide)
 2. **Adds the user** to that cost center so their Copilot usage is tracked there
 3. **Sets a hard-cap budget** on `copilot_premium_request` — usage is **blocked** once the limit is reached
 
@@ -65,7 +65,7 @@ export GITHUB_TOKEN=github_pat_xxxxxxxx
   OR
   --budget-prus <count>           # e.g. 1000  (converted using --pru-rate)
   [--pru-rate <usd-per-pru>]      # default: 0.04
-  [--cost-center-name <name>]     # default: <username>
+  [--cost-center-name <name>]     # default: <username>-YYYYMMDD-HHMMSS
   [--alert-recipient <username>]  # GitHub username to receive budget alerts
   [--dry-run]                     # Print API calls without executing
 ```
@@ -79,13 +79,23 @@ export GITHUB_TOKEN=github_pat_xxxxxxxx
 | `--budget-usd` | ✅ (or `--budget-prus`) | Budget as a USD dollar amount (e.g. `40.00`) |
 | `--budget-prus` | ✅ (or `--budget-usd`) | Budget as a number of PRU requests (e.g. `1000`) |
 | `--pru-rate` | ❌ | USD cost per PRU for conversion (default: `0.04`) |
-| `--cost-center-name` | ❌ | Name for the cost center (default: the username) |
+| `--cost-center-name` | ❌ | Name for the cost center (default: `<username>-YYYYMMDD-HHMMSS`). In interactive mode, you'll be prompted to confirm or change the name. |
 | `--alert-recipient` | ❌ | GitHub username to email at 75%, 90%, 100% budget thresholds |
 | `--dry-run` | ❌ | Print what would be done without calling the API |
 
 > **Finding your enterprise slug:** Go to `https://github.com/enterprises` — the slug is the last part of the URL when you click your enterprise (e.g. `https://github.com/enterprises/my-company` → slug is `my-company`).
 
 > **PRU rate note:** The default rate of `$0.04` per PRU applies to base Copilot models. Premium models (e.g. Claude Sonnet, GPT-4o) may cost more per request. Adjust with `--pru-rate` if needed.
+
+### Cost Center Naming
+
+By default, the cost center is named `<username>-YYYYMMDD-HHMMSS` (e.g. `octocat-20260224-143002`).
+
+| Scenario | Behavior |
+|---|---|
+| `--cost-center-name "Team Alpha"` provided | Uses `"Team Alpha"` — no prompt |
+| No flag, **interactive terminal** | Shows the default name and prompts you to confirm or enter a custom one |
+| No flag, **piped/batch mode** | Uses the timestamped default silently |
 
 ---
 
@@ -174,11 +184,11 @@ POST /enterprises/{enterprise}/settings/billing/budgets
 GitHub Enterprise Cost Center Provisioning
   Enterprise:       my-company
   User:             octocat
-  Cost center name: octocat
+  Cost center name: octocat-20260224-143002
   Budget (USD):     $40.00
   Budget (PRUs):    1000
 
-Step 1/3 — Creating cost center "octocat"
+Step 1/3 — Creating cost center "octocat-20260224-143002"
 [OK]    Cost center created (id: 3312fdf2-5950-4f64-913d-e734124059c9)
 
 Step 2/3 — Adding user "octocat" to cost center
@@ -188,7 +198,7 @@ Step 3/3 — Creating hard-cap premium request budget ($40.00)
 [OK]    Budget created (id: budget-uuid-here)
 
 Done! Summary:
-  Cost center: "octocat" (3312fdf2-5950-4f64-913d-e734124059c9)
+  Cost center: "octocat-20260224-143002" (3312fdf2-5950-4f64-913d-e734124059c9)
   User:        octocat
   Budget:      $40.00 USD — hard cap on copilot_premium_request
   (~1000 PRUs at $0.04/PRU)
